@@ -74,24 +74,28 @@ class OpenSsl_Certificate_Validator
     public function setIgnoreSelfSigned($mustIgnore)
     {
         $this->_ignoreOnSelfSigned = $mustIgnore;
+
         return $this;
     }
 
     public function setWarnOnSelfSigned($mustWarn)
     {
         $this->_warnOnSelfSigned = $mustWarn;
+
         return $this;
     }
 
     public function setTrustedRootCertificateAuthorityFile($file)
     {
         $this->_trustedRootCertificateAuthorityFile = $file;
+
         return $this;
     }
 
     public function setCertificateExpiryWarningDays($days)
     {
         $this->_certificateExpiryWarningDays = $days;
+
         return $this;
     }
 
@@ -102,7 +106,7 @@ class OpenSsl_Certificate_Validator
 
         return $this->_isValid;
     }
-    
+
     protected function _validateExpiry()
     {
         if ($this->_certificate->getValidFromUnixTime() > time()) {
@@ -130,15 +134,14 @@ class OpenSsl_Certificate_Validator
         $command->enableErrorToOutputRedirection();
         $command->execute($this->_certificate->getPem());
         $results = $command->getParsedResults();
-        
+
         $this->_isValid = $results['valid'];
 
         foreach ($results['errors'] as $openSslErrorCode => $openSslError) {
             if ($openSslErrorCode === OPENSSL_X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT) {
                 if ($this->_ignoreOnSelfSigned) {
                     continue;
-                }
-                else if ($this->_warnOnSelfSigned) {
+                } elseif ($this->_warnOnSelfSigned) {
                     $this->_warnings[] = self::WARNING_PREFIX . $openSslError['description'];
                     continue;
                 }

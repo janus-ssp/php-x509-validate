@@ -24,7 +24,7 @@
 
 /**
  *
- */ 
+ */
 class OpenSsl_Url_Validator
 {
     protected $_url;
@@ -38,24 +38,24 @@ class OpenSsl_Url_Validator
     {
         try {
             $sslUrl = new OpenSsl_Url($this->_url);
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             $endpointResponse->Errors[] = "Endpoint is not a valid URL";
+
             return $this->_sendResponse();
         }
 
         if (!$sslUrl->isHttps()) {
             $endpointResponse->Errors[] = "Endpoint is not HTTPS";
+
             return $this->_sendResponse();
         }
-
 
         $connectSuccess = $sslUrl->connect();
         if (!$connectSuccess) {
             $endpointResponse->Errors[] = "Endpoint is unreachable";
+
             return $this->_sendResponse();
         }
-
 
         if (!$sslUrl->isCertificateValidForUrlHostname()) {
             $urlHostName = $sslUrl->getHostName();

@@ -25,10 +25,11 @@
 /**
  * Interface for a shell command.
  */
-interface Shell_Command_Interface {
+interface Shell_Command_Interface
+{
     /**
      * @abstract
-     * @param string $stdIn
+     * @param  string                  $stdIn
      * @return Shell_Command_Interface
      */
     public function execute($stdIn = "");

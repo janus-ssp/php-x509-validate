@@ -24,7 +24,7 @@
 
 /**
  *
- */ 
+ */
 class OpenSsl_Url
 {
     protected $_url;
@@ -51,6 +51,7 @@ class OpenSsl_Url
     public function setTrustedRootCertificateAuthorityFile($file)
     {
         $this->_trustedRootCertificateAuthorityFile = $file;
+
         return $this;
     }
 
@@ -102,6 +103,7 @@ class OpenSsl_Url
         $certificateOutput = $blocks[1];
 
         $certificatesFound = OpenSsl_Certificate_Utility::getCertificatesFromText($certificateOutput);
+
         return OpenSsl_Certificate_Chain_Factory::createFromCertificates($certificatesFound);
     }
 
@@ -117,6 +119,7 @@ class OpenSsl_Url
                 return true;
             }
         }
+
         return false;
     }
 
@@ -126,8 +129,8 @@ class OpenSsl_Url
      * or
      * *.test.example.com
      *
-     * @param string $hostname
-     * @param string $pattern
+     * @param  string $hostname
+     * @param  string $pattern
      * @return bool
      */
     protected function _doesHostnameMatchPattern($hostname, $pattern)

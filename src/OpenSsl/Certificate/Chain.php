@@ -44,12 +44,13 @@ class OpenSsl_Certificate_Chain
      *
      * Note that this does not do any checking!
      *
-     * @param OpenSsl_Certificate $certificate
+     * @param  OpenSsl_Certificate       $certificate
      * @return OpenSsl_Certificate_Chain
      */
     public function addCertificate(OpenSsl_Certificate $certificate)
     {
         array_push($this->_certificates, $certificate);
+
         return $this;
     }
 

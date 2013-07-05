@@ -57,6 +57,7 @@ class OpenSsl_Certificate_Chain_Factory
 
             $chain->addCertificate($certificate);
         }
+
         return $chain;
     }
 
@@ -73,6 +74,7 @@ class OpenSsl_Certificate_Chain_Factory
 
             $chain->addCertificate($certificate);
         }
+
         return $chain;
     }
 
@@ -81,7 +83,7 @@ class OpenSsl_Certificate_Chain_Factory
         if (!$chain) {
             $chain = new OpenSsl_Certificate_Chain();
         }
-        
+
         $chain->addCertificate($certificate);
 
         // Self signed?
@@ -92,6 +94,7 @@ class OpenSsl_Certificate_Chain_Factory
         // Root CA, add it and stop building
         if (isset(self::$s_rootCertificates[$certificate->getIssuerDn()])) {
             $chain->addCertificate(self::$s_rootCertificates[$certificate->getIssuerDn()]);
+
             return $chain;
         }
 
@@ -121,6 +124,7 @@ class OpenSsl_Certificate_Chain_Factory
             }
 
             $issuerCertificate = new OpenSsl_Certificate($issuerCertificate);
+
             return self::createFromCertificateIssuerUrl($issuerCertificate, $chain);
         }
         // Can't get the issuer certificate... return the chain as is...

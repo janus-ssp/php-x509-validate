@@ -366,6 +366,7 @@ class OpenSsl_Command_Verify extends Shell_Command_Abstract
     public function setCertificateAuthorityFile($caFile)
     {
         $this->_caFile = $caFile;
+
         return $this;
     }
 
@@ -374,8 +375,7 @@ class OpenSsl_Command_Verify extends Shell_Command_Abstract
         $command = self::COMMAND;
         if (isset($this->_caFile)) {
             return $command . ' -CAfile ' . escapeshellarg(realpath($this->_caFile));
-        }
-        else {
+        } else {
             return $command;
         }
     }
@@ -384,17 +384,17 @@ class OpenSsl_Command_Verify extends Shell_Command_Abstract
      * Tries to parse the results and return whether the validation succeeded or not and any errors that occurred.
      *
      * @throws Exception
-     * @return array Parsed results in the form: array(valid => bool, errors => array(code => message))
+     * @return array     Parsed results in the form: array(valid => bool, errors => array(code => message))
      */
     public function getParsedResults()
     {
-        if(empty($this->_output)) {
+        if (empty($this->_output)) {
             throw new Exception("Verify did not return any output");
         }
 
         $stdInPrefix = 'stdin: ';
         $wasExecutionSuccesful = strpos($this->_output, $stdInPrefix)===0;
-        if(!$wasExecutionSuccesful) {
+        if (!$wasExecutionSuccesful) {
             return $this->_buildExecutionErrors($this->_output);
         }
 
@@ -418,13 +418,14 @@ class OpenSsl_Command_Verify extends Shell_Command_Abstract
                 throw new Exception("Expecting 'error NUM at NUM depth', got: '$errorLine'");
             }
 
-            $errorCode = (int)$matches[1];
+            $errorCode = (int) $matches[1];
             if (!isset($this->_ERROR_CODE_LOOKUP[$errorCode])) {
                 throw new Exception("Unknown error code '$errorCode' from '$errorLine'?!");
             }
 
             $errors[$errorCode] = $this->_ERROR_CODE_LOOKUP[$errorCode];
         }
+
         return array(
             'valid' => $valid,
             'errors' => $errors,
@@ -434,8 +435,8 @@ class OpenSsl_Command_Verify extends Shell_Command_Abstract
     /**
      * Builds return value when validation execution fails
      *
-     * @param   string  $output
-     * @return  array error result
+     * @param  string $output
+     * @return array  error result
      */
     protected function _buildExecutionErrors($output)
     {

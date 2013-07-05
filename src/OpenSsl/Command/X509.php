@@ -35,7 +35,7 @@
 class OpenSsl_Command_X509 extends Shell_Command_Abstract
 {
     const COMMAND = 'openssl x509';
-    
+
     const FORM_PEM = 'PEM';
     const FORM_DER = 'DER';
 
@@ -72,18 +72,20 @@ class OpenSsl_Command_X509 extends Shell_Command_Abstract
     public function setDisplayText()
     {
         $this->_displayText = true;
+
         return $this;
     }
 
     /**
      * Read a certificate from a file.
      *
-     * @param string $filepath Path to the file with certificate.
+     * @param  string               $filepath Path to the file with certificate.
      * @return OpenSsl_Command_X509
      */
     public function setInFile($filepath)
     {
         $this->_inFile = $filepath;
+
         return $this;
     }
 
@@ -93,7 +95,7 @@ class OpenSsl_Command_X509 extends Shell_Command_Abstract
      * Lord knows why OpenSSL can't just detect this.
      *
      * @throws OpenSsl_Command_Exception_UnsupportedForm
-     * @param string $form Either 'PEM' or 'DER'
+     * @param  string                                    $form Either 'PEM' or 'DER'
      * @return OpenSsl_Command_X509
      */
     public function setInForm($form)
@@ -103,6 +105,7 @@ class OpenSsl_Command_X509 extends Shell_Command_Abstract
         }
 
         $this->_inForm = $form;
+
         return $this;
     }
 
@@ -110,7 +113,7 @@ class OpenSsl_Command_X509 extends Shell_Command_Abstract
      * Output either a 'PEM' or 'DER' certificate.
      *
      * @throws OpenSsl_Command_Exception_UnsupportedForm
-     * @param string $form Either 'PEM' or 'DER'.
+     * @param  string                                    $form Either 'PEM' or 'DER'.
      * @return OpenSsl_Command_X509
      */
     public function setOutForm($form)
@@ -120,6 +123,7 @@ class OpenSsl_Command_X509 extends Shell_Command_Abstract
         }
 
         $this->_outForm = $form;
+
         return $this;
     }
 
@@ -132,6 +136,7 @@ class OpenSsl_Command_X509 extends Shell_Command_Abstract
     public function setOutFile($file)
     {
         $this->_outFile = $file;
+
         return $this;
     }
 
@@ -153,6 +158,7 @@ class OpenSsl_Command_X509 extends Shell_Command_Abstract
         if ($this->_outFile) {
             $command .= ' -out ' . $this->_outFile;
         }
+
         return $command;
     }
 }

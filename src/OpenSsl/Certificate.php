@@ -43,6 +43,7 @@ class OpenSsl_Certificate
     public function setTrustedRootCertificateAuthority($isTrusted)
     {
         $this->_trustedRootCertificateAuthority = $isTrusted;
+
         return $this;
     }
 
@@ -56,6 +57,7 @@ class OpenSsl_Certificate
         if ($partName!=='') {
             return $this->_parsed['subject'][$partName];
         }
+
         return $this->_parsed['subject'];
     }
 
@@ -70,11 +72,11 @@ class OpenSsl_Certificate
             $name = trim($name);
             if (substr($name, 0, strlen('DNS:'))==='DNS:') {
                 $name = substr($name, strlen('DNS:'));
-            }
-            else {
+            } else {
                 unset($names[$key]);
             }
         }
+
         return $names;
     }
 
@@ -84,6 +86,7 @@ class OpenSsl_Certificate
         foreach ($this->_parsed['subject'] as $key => $value) {
             $dnParts []= "/$key=$value";
         }
+
         return implode(',', $dnParts);
     }
 
@@ -98,6 +101,7 @@ class OpenSsl_Certificate
         foreach ($this->_parsed['issuer'] as $key => $value) {
             $dnParts []= "/$key=$value";
         }
+
         return implode(',', $dnParts);
     }
 
@@ -157,6 +161,7 @@ class OpenSsl_Certificate
         $names = $this->getSubjectAltNames();
         array_unshift($names, $this->getSubject('CN'));
         $names = array_keys(array_flip($names)); // Remove duplicates
+
         return $names;
     }
 }

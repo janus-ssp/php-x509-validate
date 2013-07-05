@@ -60,7 +60,7 @@ abstract class Shell_Command_Abstract implements Shell_Command_Interface
      * Build the string with the command that should get executed.
      *
      * @abstract
-     * @param array $arguments Arguments for the command, don't forget to use escapeshellarg!
+     * @param  array  $arguments Arguments for the command, don't forget to use escapeshellarg!
      * @return string
      */
     abstract protected function _buildCommand($arguments = array());
@@ -70,7 +70,7 @@ abstract class Shell_Command_Abstract implements Shell_Command_Interface
      * feed it with stdIn and store the stdOut, stdErr and exit status for retrieval later.
      *
      * @throws Shell_Command_Exception
-     * @param string $stdIn
+     * @param  string                  $stdIn
      * @return Shell_Command_Abstract
      */
     public function execute($stdIn = "")
@@ -108,13 +108,14 @@ abstract class Shell_Command_Abstract implements Shell_Command_Interface
         $this->_errors = $errors;
         $this->_output = $output;
         $this->_exitStatus = proc_close($process);
+
         return $this;
     }
 
     /**
      * Wrapper to enables redirection of errors to output
      *
-     * Some programs like for example openssl, detect if called from terminal 
+     * Some programs like for example openssl, detect if called from terminal
      * or via system call, in the latter case this means error output is not available
      * A workaround in those cases is to redirect errors to output
      *
@@ -130,8 +131,8 @@ abstract class Shell_Command_Abstract implements Shell_Command_Interface
      *
      * This method is intentionally not public (yet) since that require the added complexity of escaping redirects
      *
-     * @param   string  $redirect
-     * @return  void
+     * @param  string $redirect
+     * @return void
      */
     protected function _addRedirect($redirect)
     {
@@ -141,17 +142,18 @@ abstract class Shell_Command_Abstract implements Shell_Command_Interface
     /**
      * Suffixes added redirects to command
      *
-     * @param   string    $command
-     * @return  string    $suffixedCommand
+     * @param  string $command
+     * @return string $suffixedCommand
      */
     protected function _suffixRedirects($command)
     {
         $suffixedCommand = $command;
-        if(is_array($this->_redirects)) {
-            foreach($this->_redirects as $redirect) {
+        if (is_array($this->_redirects)) {
+            foreach ($this->_redirects as $redirect) {
                 $suffixedCommand .= ' ' . $redirect;
             }
         }
+
         return $suffixedCommand;
     }
 

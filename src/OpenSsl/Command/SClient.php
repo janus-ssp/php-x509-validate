@@ -28,7 +28,7 @@
  * From the OpenSSL documentation (http://www.openssl.org/docs/apps/s_client.html):
  * "The s_client command implements a generic SSL/TLS client which connects to a remote host using SSL/TLS.
  * It is a very useful diagnostic tool for SSL servers."
- */ 
+ */
 class OpenSsl_Command_SClient extends Shell_Command_Abstract
 {
     const COMMAND = 'openssl s_client';
@@ -43,6 +43,7 @@ class OpenSsl_Command_SClient extends Shell_Command_Abstract
             'host' => $host,
             'port' => $port,
         );
+
         return $this;
     }
 
@@ -54,6 +55,7 @@ class OpenSsl_Command_SClient extends Shell_Command_Abstract
     public function setCertificateAuthorityFile($file)
     {
         $this->_certificateAuthorityFile = $file;
+
         return $this;
     }
 
@@ -69,6 +71,7 @@ class OpenSsl_Command_SClient extends Shell_Command_Abstract
         if (isset($this->_certificateAuthorityFile)) {
             $command .= ' -CAfile ' . escapeshellarg($this->_certificateAuthorityFile);
         }
+
         return $command;
     }
 }

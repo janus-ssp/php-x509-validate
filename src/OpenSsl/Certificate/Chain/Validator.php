@@ -24,12 +24,12 @@
 
 /**
  *
- */ 
+ */
 class OpenSsl_Certificate_Chain_Validator
 {
     const ERROR_PREFIX = 'OpenSSL: ';
     const WARNING_PREFIX = 'OpenSSL: ';
-    
+
     protected $_chain;
 
     protected $_ignoreOnSelfSigned = false;
@@ -52,18 +52,21 @@ class OpenSsl_Certificate_Chain_Validator
     public function setIgnoreSelfSigned($mustIgnore)
     {
         $this->_ignoreOnSelfSigned = $mustIgnore;
+
         return $this;
     }
 
     public function setWarnOnSelfSigned($mustWarn)
     {
         $this->_warnOnSelfSigned = $mustWarn;
+
         return $this;
     }
 
     public function setTrustedRootCertificateAuthorityFile($file)
     {
         $this->_trustedRootCertificateAuthorityFile = $file;
+
         return $this;
     }
 
@@ -82,7 +85,7 @@ class OpenSsl_Certificate_Chain_Validator
 
         $prevIssuer = $certificate->getIssuerDn();
 
-        while(!empty($chainCertificates)) {
+        while (!empty($chainCertificates)) {
             $certificate = array_shift($chainCertificates);
             $count++;
 
@@ -114,14 +117,13 @@ class OpenSsl_Certificate_Chain_Validator
         $command->execute($chainPems)->getOutput();
 
         $results = $command->getParsedResults();
-        
+
         $this->_valid = $results['valid'];
         foreach ($results['errors'] as $openSslErrorCode => $openSslError) {
             if ($openSslErrorCode === OPENSSL_X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT) {
                 if ($this->_ignoreOnSelfSigned) {
                     continue;
-                }
-                else if ($this->_warnOnSelfSigned) {
+                } elseif ($this->_warnOnSelfSigned) {
                     $this->_warnings[] = self::WARNING_PREFIX . $openSslError['description'];
                     continue;
                 }
