@@ -1,0 +1,15 @@
+{
+    "name": "janus-ssp/php-x509-validate",
+    "description": "Validate X.509 (SSL) certificates using the 'openssl' command line library.",
+    "minimum-stability": "stable",
+    "authors": [
+        {
+            "name": "Boy Baukema",
+            "email": "relaxnownl@gmail.com"
+        },
+        {
+            "name": "Lucas van Lierop",
+            "email": "lucas@vanlierop.org"
+        }
+    ]
+}
