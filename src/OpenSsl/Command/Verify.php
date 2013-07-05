@@ -209,11 +209,18 @@ define("OPENSSL_X509_V_ERR_KEYUSAGE_NO_CERTSIGN", 32);
 define("OPENSSL_X509_V_ERR_APPLICATION_VERIFICATION", 50);
 
 /**
- * 
+ * OpenSSL verify
+ *
+ * From the documentation (http://www.openssl.org/docs/apps/verify.html):
+ * "The verify command verifies certificate chains."
+ *
+ * Tries to parse the (unspecified) output.
  */
 class OpenSsl_Command_Verify extends Shell_Command_Abstract
 {
     const COMMAND = 'openssl verify';
+
+    protected $_caFile;
 
     /**
      * From:
@@ -357,25 +364,42 @@ class OpenSsl_Command_Verify extends Shell_Command_Abstract
         ),
     );
 
-    protected $_certificateAuthorityFile;
-
-    public function setCertificateAuthorityFile($file)
+    public function setCertificateAuthorityFile($caFile)
     {
-        $this->_certificateAuthorityFile = $file;
+        $this->_caFile = $caFile;
         return $this;
     }
 
-    protected function _buildCommand()
+    protected function _buildCommand($arguments = array())
     {
-        return self::COMMAND;
+        $command = self::COMMAND;
+        if (isset($this->_caFile)) {
+            return $command . ' -CAfile ' . escapeshellarg(realpath($this->_caFile));
+        }
+        else {
+            return $command;
+        }
     }
 
+    /**
+     * Tries to parse the results and return whether the validation succeeded or not and any errors that occurred.
+     *
+     * @throws Exception
+     * @return array Parsed results in the form: array(valid => bool, errors => array(code => message))
+     */
     public function getParsedResults()
     {
-        $output = $this->_output;
-        if (strpos($this->_output, 'stdin: ')===0) {
-            $output = trim(substr($this->_output, strlen('stdin: ')));
+        if(empty($this->_output)) {
+            throw new Exception("Verify did not return any output");
         }
+
+        $stdInPrefix = 'stdin: ';
+        $wasExecutionSuccesful = strpos($this->_output, $stdInPrefix)===0;
+        if(!$wasExecutionSuccesful) {
+            return $this->_buildExecutionErrors($this->_output);
+        }
+
+        $output = trim(substr($this->_output, strlen($stdInPrefix)));
         $outputLines = explode(PHP_EOL, $output);
 
         $valid = false;
@@ -405,6 +429,29 @@ class OpenSsl_Command_Verify extends Shell_Command_Abstract
         return array(
             'valid' => $valid,
             'errors' => $errors,
+        );
+    }
+
+    /**
+     * Builds return value when validation execution fails
+     *
+     * @param   string  $output
+     * @return  array error result
+     */
+    protected function _buildExecutionErrors($output)
+    {
+        $errors = array();
+        $errorLines = explode(PHP_EOL, trim($output));
+        foreach ($errorLines as $errorLine) {
+            $errors[] = array(
+                'name' => 'ERROR',
+                'description' => $errorLine
+            );
+        }
+
+        return array(
+            'valid' => false,
+            'errors' => $errors
         );
     }
 }

@@ -24,7 +24,11 @@
  */
 
 /**
+ * OpenSSL s_client command
  *
+ * From the OpenSSL documentation (http://www.openssl.org/docs/apps/s_client.html):
+ * "The s_client command implements a generic SSL/TLS client which connects to a remote host using SSL/TLS.
+ * It is a very useful diagnostic tool for SSL servers."
  */ 
 class OpenSsl_Command_SClient extends Shell_Command_Abstract
 {
@@ -54,7 +58,7 @@ class OpenSsl_Command_SClient extends Shell_Command_Abstract
         return $this;
     }
 
-    public function _buildCommand()
+    public function _buildCommand($arguments = array())
     {
         $command = self::COMMAND;
         if (isset($this->_connectTo)) {

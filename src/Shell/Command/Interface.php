@@ -23,6 +23,17 @@
  * @license   http://www.apache.org/licenses/LICENSE-2.0  Apache License 2.0
  */
 
+/**
+ * Interface for a shell command.
+ */
 interface Shell_Command_Interface {
+    /**
+     * @abstract
+     * @param string $stdIn
+     * @return Shell_Command_Interface
+     */
     public function execute($stdIn = "");
+    public function getExitStatus();
+    public function getOutput();
+    public function getErrors();
 }

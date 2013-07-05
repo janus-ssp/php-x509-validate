@@ -24,10 +24,17 @@
  */
 
 /**
- *
+ * Utility class dealing with certificates.
  */ 
 class OpenSsl_Certificate_Utility
 {
+    /**
+     * Look for PEM encoded certs in text (like Mozillas CA bundle).
+     *
+     * @static
+     * @param string $text
+     * @return array Certificates found (array of OpenSsl_Certificate objects)
+     */
     public static function getCertificatesFromText($text)
     {
         $inputLines = explode(PHP_EOL, $text);

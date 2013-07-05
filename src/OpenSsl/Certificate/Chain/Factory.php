@@ -24,9 +24,9 @@
  */
 
 /**
- *
- */ 
-class OpenSsl_Certificate_Chain_Factory 
+ * Build a certificate chain
+ */
+class OpenSsl_Certificate_Chain_Factory
 {
     protected static $s_rootCertificates;
 
@@ -101,7 +101,8 @@ class OpenSsl_Certificate_Chain_Factory
          */
         $issuerUrls = $certificate->getCertificateAuthorityIssuerUrls();
         if (empty($issuerUrls)) {
-            throw new OpenSsl_Certificate_Chain_Exception_BuildingFailedIssuerUrlNotFound("Unable to get issuer certificate?");
+            // Can't get the issuer certificate... return the chain as is...
+            return $chain;
         }
 
         foreach ($issuerUrls as $issuerUrl) {
@@ -123,9 +124,7 @@ class OpenSsl_Certificate_Chain_Factory
             $issuerCertificate = new OpenSsl_Certificate($issuerCertificate);
             return self::createFromCertificateIssuerUrl($issuerCertificate, $chain);
         }
-
-        throw new OpenSsl_Certificate_Chain_Exception_BuildingFailedIssuerUrlNotFound(
-            "Unable to get issuer certificate?"
-        );
+        // Can't get the issuer certificate... return the chain as is...
+        return $chain;
     }
 }

@@ -23,19 +23,15 @@
  * @license   http://www.apache.org/licenses/LICENSE-2.0  Apache License 2.0
  */
 
+/**
+ * Demo implementation of shell command pattern.
+ */
 class Shell_Command_Echo extends Shell_Command_Abstract
 {
     const COMMAND = 'echo';
 
-    protected $_output;
-
-    public function __construct($output)
+    public function _buildCommand($arguments = array())
     {
-        $this->_output = $output;
-    }
-
-    public function _buildCommand()
-    {
-        return self::COMMAND . ' ' . escapeshellarg($this->_output);
+        return self::COMMAND . ' ' . escapeshellarg($arguments[0]);
     }
 }

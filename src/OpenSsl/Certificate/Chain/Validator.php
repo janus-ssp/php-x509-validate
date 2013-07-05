@@ -109,6 +109,9 @@ class OpenSsl_Certificate_Chain_Validator
         if (isset($this->_trustedRootCertificateAuthorityFile)) {
             $command->setCertificateAuthorityFile($this->_trustedRootCertificateAuthorityFile);
         }
+
+        // Open ssl command does not return it's error output when called indirectly
+        $command->enableErrorToOutputRedirection();
         $command->execute($chainPems)->getOutput();
 
         $results = $command->getParsedResults();
