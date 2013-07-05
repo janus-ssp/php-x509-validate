@@ -32,7 +32,7 @@
  *
  * Mainly used for conversion of X.509 certificates.
  */
-class OpenSsl_Command_X509 extends Shell_Command_Abstract
+class JanusSsp_OpenSsl_Command_X509 extends JanusSsp_Shell_Command_Abstract
 {
     const COMMAND = 'openssl x509';
 
@@ -67,7 +67,7 @@ class OpenSsl_Command_X509 extends Shell_Command_Abstract
     /**
      * Set OpenSSL to output a certificate to human readable text.
      *
-     * @return OpenSsl_Command_X509
+     * @return JanusSsp_OpenSsl_Command_X509
      */
     public function setDisplayText()
     {
@@ -80,7 +80,7 @@ class OpenSsl_Command_X509 extends Shell_Command_Abstract
      * Read a certificate from a file.
      *
      * @param  string               $filepath Path to the file with certificate.
-     * @return OpenSsl_Command_X509
+     * @return JanusSsp_OpenSsl_Command_X509
      */
     public function setInFile($filepath)
     {
@@ -94,14 +94,14 @@ class OpenSsl_Command_X509 extends Shell_Command_Abstract
      *
      * Lord knows why OpenSSL can't just detect this.
      *
-     * @throws OpenSsl_Command_Exception_UnsupportedForm
+     * @throws JanusSsp_OpenSsl_Command_Exception_UnsupportedForm
      * @param  string                                    $form Either 'PEM' or 'DER'
-     * @return OpenSsl_Command_X509
+     * @return JanusSsp_OpenSsl_Command_X509
      */
     public function setInForm($form)
     {
         if (!in_array($form, array(self::FORM_PEM, self::FORM_DER))) {
-            throw new OpenSsl_Command_Exception_UnsupportedForm("Form '$form' is unsupported");
+            throw new JanusSsp_OpenSsl_Command_Exception_UnsupportedForm("Form '$form' is unsupported");
         }
 
         $this->_inForm = $form;
@@ -112,14 +112,14 @@ class OpenSsl_Command_X509 extends Shell_Command_Abstract
     /**
      * Output either a 'PEM' or 'DER' certificate.
      *
-     * @throws OpenSsl_Command_Exception_UnsupportedForm
+     * @throws JanusSsp_OpenSsl_Command_Exception_UnsupportedForm
      * @param  string                                    $form Either 'PEM' or 'DER'.
-     * @return OpenSsl_Command_X509
+     * @return JanusSsp_OpenSsl_Command_X509
      */
     public function setOutForm($form)
     {
         if (!in_array($form, array(self::FORM_PEM, self::FORM_DER))) {
-            throw new OpenSsl_Command_Exception_UnsupportedForm("Form '$form' is unsupported");
+            throw new JanusSsp_OpenSsl_Command_Exception_UnsupportedForm("Form '$form' is unsupported");
         }
 
         $this->_outForm = $form;
@@ -131,7 +131,7 @@ class OpenSsl_Command_X509 extends Shell_Command_Abstract
      * Send the output to a file.
      *
      * @param $file
-     * @return OpenSsl_Command_X509
+     * @return JanusSsp_OpenSsl_Command_X509
      */
     public function setOutFile($file)
     {

@@ -22,6 +22,6 @@
  * @license   http://www.apache.org/licenses/LICENSE-2.0  Apache License 2.0
  */
 
-class OpenSsl_Certificate_Exception_NotAValidPem extends Exception
+class JanusSsp_OpenSsl_Certificate_Exception_NotAValidPem extends Exception
 {
 }

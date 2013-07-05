@@ -27,7 +27,7 @@ define('DAY_IN_SECONDS', 86400);
 /**
  *
  */
-class OpenSsl_Certificate_Validator
+class JanusSsp_OpenSsl_Certificate_Validator
 {
     const ERROR_PREFIX      = 'OpenSSL: ';
     const WARNING_PREFIX    = 'OpenSSL: ';
@@ -66,7 +66,7 @@ class OpenSsl_Certificate_Validator
 
     protected $_trustedRootCertificateAuthorityFile;
 
-    public function __construct(OpenSsl_Certificate $certificate)
+    public function __construct(JanusSsp_OpenSsl_Certificate $certificate)
     {
         $this->_certificate = $certificate;
     }

@@ -22,7 +22,7 @@
  * @license   http://www.apache.org/licenses/LICENSE-2.0  Apache License 2.0
  */
 
-class OpenSsl_Certificate
+class JanusSsp_OpenSsl_Certificate
 {
     protected $_pemData;
 
@@ -36,7 +36,7 @@ class OpenSsl_Certificate
         $this->_parsed = openssl_x509_parse($pemData);
 
         if ($this->_parsed === false) {
-            throw new OpenSsl_Certificate_Exception_NotAValidPem("Data '$pemData' is not a valid X.509 PEM certificate");
+            throw new JanusSsp_OpenSsl_Certificate_Exception_NotAValidPem("Data '$pemData' is not a valid X.509 PEM certificate");
         }
     }
 

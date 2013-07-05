@@ -25,7 +25,7 @@
 /**
  * Build a certificate chain
  */
-class OpenSsl_Certificate_Chain_Factory
+class JanusSsp_OpenSsl_Certificate_Chain_Factory
 {
     protected static $s_rootCertificates;
 
@@ -36,7 +36,7 @@ class OpenSsl_Certificate_Chain_Factory
         }
 
         $fileContents = file_get_contents($filePath);
-        $certificatesFound = OpenSsl_Certificate_Utility::getCertificatesFromText($fileContents);
+        $certificatesFound = JanusSsp_OpenSsl_Certificate_Utility::getCertificatesFromText($fileContents);
 
         self::setRootCertificates($certificatesFound);
     }
@@ -48,7 +48,7 @@ class OpenSsl_Certificate_Chain_Factory
 
     public static function createFromCertificates(array $certificates)
     {
-        $chain = new OpenSsl_Certificate_Chain();
+        $chain = new JanusSsp_OpenSsl_Certificate_Chain();
         foreach ($certificates as $certificate) {
             // Root CA?
             if (isset(self::$s_rootCertificates[$certificate->getIssuerDn()])) {
@@ -63,9 +63,9 @@ class OpenSsl_Certificate_Chain_Factory
 
     public static function createFromPems(array $pems)
     {
-        $chain = new OpenSsl_Certificate_Chain();
+        $chain = new JanusSsp_OpenSsl_Certificate_Chain();
         foreach ($pems as $pem) {
-            $certificate = new OpenSsl_Certificate($pem);
+            $certificate = new JanusSsp_OpenSsl_Certificate($pem);
 
             // Root CA?
             if (isset(self::$s_rootCertificates[$certificate->getIssuerDn()])) {
@@ -78,10 +78,10 @@ class OpenSsl_Certificate_Chain_Factory
         return $chain;
     }
 
-    public static function createFromCertificateIssuerUrl(OpenSsl_Certificate $certificate, OpenSsl_Certificate_Chain $chain = null)
+    public static function createFromCertificateIssuerUrl(JanusSsp_OpenSsl_Certificate $certificate, JanusSsp_OpenSsl_Certificate_Chain $chain = null)
     {
         if (!$chain) {
-            $chain = new OpenSsl_Certificate_Chain();
+            $chain = new JanusSsp_OpenSsl_Certificate_Chain();
         }
 
         $chain->addCertificate($certificate);
@@ -117,13 +117,13 @@ class OpenSsl_Certificate_Chain_Factory
 
             // Not a PEM certificate? Probably a DER certificate, transform
             if (strpos($issuerCertificate, '-----BEGIN CERTIFICATE-----') === false) {
-                $x509Command = new OpenSsl_Command_X509();
-                $x509Command->setInForm(OpenSsl_Command_X509::FORM_DER);
+                $x509Command = new JanusSsp_OpenSsl_Command_X509();
+                $x509Command->setInForm(JanusSsp_OpenSsl_Command_X509::FORM_DER);
                 $x509Command->execute($issuerCertificate)->getOutput();
                 $issuerCertificate = $x509Command->getOutput();
             }
 
-            $issuerCertificate = new OpenSsl_Certificate($issuerCertificate);
+            $issuerCertificate = new JanusSsp_OpenSsl_Certificate($issuerCertificate);
 
             return self::createFromCertificateIssuerUrl($issuerCertificate, $chain);
         }

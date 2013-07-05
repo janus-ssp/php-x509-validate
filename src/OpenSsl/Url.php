@@ -25,7 +25,7 @@
 /**
  *
  */
-class OpenSsl_Url
+class JanusSsp_OpenSsl_Url
 {
     protected $_url;
     protected $_parsed;
@@ -35,7 +35,7 @@ class OpenSsl_Url
     protected $_serverCertificateChainPem;
 
     /**
-     * @var OpenSsl_Command_SClient
+     * @var JanusSsp_OpenSsl_Command_SClient
      */
     protected $_connection;
 
@@ -44,7 +44,7 @@ class OpenSsl_Url
         $this->_url     = $url;
         $this->_parsed  = parse_url($url);
         if (!$this->_parsed) {
-            throw new OpenSsl_Url_UnparsableUrlException("Url '$url' is not a valid URL");
+            throw new JanusSsp_OpenSsl_Url_UnparsableUrlException("Url '$url' is not a valid URL");
         }
     }
 
@@ -72,7 +72,7 @@ class OpenSsl_Url
 
     public function connect()
     {
-        $command = new OpenSsl_Command_SClient();
+        $command = new JanusSsp_OpenSsl_Command_SClient();
         $command->setConnectTo($this->_parsed['host']);
         $command->setShowCerts(true);
         if (isset($this->_trustedRootCertificateAuthorityFile)) {
@@ -90,11 +90,11 @@ class OpenSsl_Url
             $this->connect();
         }
 
-        $x509Command = new OpenSsl_Command_X509();
+        $x509Command = new JanusSsp_OpenSsl_Command_X509();
         $x509Command->execute($this->_connection->getOutput());
         $pem = $x509Command->getOutput();
 
-        return new OpenSsl_Certificate($pem);
+        return new JanusSsp_OpenSsl_Certificate($pem);
     }
 
     public function getServerCertificateChain()
@@ -102,9 +102,9 @@ class OpenSsl_Url
         $blocks = explode("\n---\n", $this->_connection->getOutput());
         $certificateOutput = $blocks[1];
 
-        $certificatesFound = OpenSsl_Certificate_Utility::getCertificatesFromText($certificateOutput);
+        $certificatesFound = JanusSsp_OpenSsl_Certificate_Utility::getCertificatesFromText($certificateOutput);
 
-        return OpenSsl_Certificate_Chain_Factory::createFromCertificates($certificatesFound);
+        return JanusSsp_OpenSsl_Certificate_Chain_Factory::createFromCertificates($certificatesFound);
     }
 
     public function isCertificateValidForUrlHostname()

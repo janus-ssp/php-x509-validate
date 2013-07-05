@@ -25,7 +25,7 @@
 /**
  * Certificate chain.
  */
-class OpenSsl_Certificate_Chain
+class JanusSsp_OpenSsl_Certificate_Chain
 {
     protected $_certificates;
 
@@ -44,10 +44,10 @@ class OpenSsl_Certificate_Chain
      *
      * Note that this does not do any checking!
      *
-     * @param  OpenSsl_Certificate       $certificate
-     * @return OpenSsl_Certificate_Chain
+     * @param  JanusSsp_OpenSsl_Certificate       $certificate
+     * @return JanusSsp_OpenSsl_Certificate_Chain
      */
-    public function addCertificate(OpenSsl_Certificate $certificate)
+    public function addCertificate(JanusSsp_OpenSsl_Certificate $certificate)
     {
         array_push($this->_certificates, $certificate);
 

@@ -1,5 +1,5 @@
 <?php
 
-class Shell_Command_Exception extends Exception
+class JanusSsp_Shell_Command_Exception extends Exception
 {
 }

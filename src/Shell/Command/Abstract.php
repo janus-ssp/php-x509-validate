@@ -25,9 +25,9 @@
 /**
  * Base class that allows for the execution of a command via the shell.
  *
- * @throws Shell_Command_Exception
+ * @throws JanusSsp_Shell_Command_Exception
  */
-abstract class Shell_Command_Abstract implements Shell_Command_Interface
+abstract class JanusSsp_Shell_Command_Abstract implements JanusSsp_Shell_Command_Interface
 {
     const STDIN_CODE = 0;
     const STDOUT_CODE = 1;
@@ -69,9 +69,9 @@ abstract class Shell_Command_Abstract implements Shell_Command_Interface
      * Execute the command,
      * feed it with stdIn and store the stdOut, stdErr and exit status for retrieval later.
      *
-     * @throws Shell_Command_Exception
+     * @throws JanusSsp_Shell_Command_Exception
      * @param  string                  $stdIn
-     * @return Shell_Command_Abstract
+     * @return JanusSsp_Shell_Command_Abstract
      */
     public function execute($stdIn = "")
     {
@@ -88,11 +88,11 @@ abstract class Shell_Command_Abstract implements Shell_Command_Interface
         $process = proc_open($command, $descSpec, $pipes);
 
         if (!is_resource($process)) {
-            throw new Shell_Command_Exception('Failed to execute command: ' . $command);
+            throw new JanusSsp_Shell_Command_Exception('Failed to execute command: ' . $command);
         }
 
         if (fwrite($pipes[0], $stdIn) === FALSE) {
-            throw new Shell_Command_Exception('Failed to write certificate for pipe.');
+            throw new JanusSsp_Shell_Command_Exception('Failed to write certificate for pipe.');
         }
         fclose($pipes[0]);
 

@@ -25,14 +25,14 @@
 /**
  * Utility class dealing with certificates.
  */
-class OpenSsl_Certificate_Utility
+class JanusSsp_OpenSsl_Certificate_Utility
 {
     /**
      * Look for PEM encoded certs in text (like Mozillas CA bundle).
      *
      * @static
      * @param  string $text
-     * @return array  Certificates found (array of OpenSsl_Certificate objects)
+     * @return array  Certificates found (array of JanusSsp_OpenSsl_Certificate objects)
      */
     public static function getCertificatesFromText($text)
     {
@@ -52,7 +52,7 @@ class OpenSsl_Certificate_Utility
             }
 
             if (trim($inputLine) === "-----END CERTIFICATE-----") {
-                $certificate = new OpenSsl_Certificate($certificate);
+                $certificate = new JanusSsp_OpenSsl_Certificate($certificate);
                 $certificatesFound[$certificate->getSubjectDN()] = $certificate;
                 $recording = false;
             }

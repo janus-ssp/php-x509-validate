@@ -25,7 +25,7 @@
 /**
  *
  */
-class OpenSsl_Url_UnparsableUrlException extends Exception
+class JanusSsp_OpenSsl_Url_UnparsableUrlException extends Exception
 {
 
 }

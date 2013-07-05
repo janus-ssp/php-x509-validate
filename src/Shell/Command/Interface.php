@@ -25,12 +25,12 @@
 /**
  * Interface for a shell command.
  */
-interface Shell_Command_Interface
+interface JanusSsp_Shell_Command_Interface
 {
     /**
      * @abstract
      * @param  string                  $stdIn
-     * @return Shell_Command_Interface
+     * @return JanusSsp_Shell_Command_Interface
      */
     public function execute($stdIn = "");
     public function getExitStatus();

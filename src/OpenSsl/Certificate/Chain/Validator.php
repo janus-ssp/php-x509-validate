@@ -25,7 +25,7 @@
 /**
  *
  */
-class OpenSsl_Certificate_Chain_Validator
+class JanusSsp_OpenSsl_Certificate_Chain_Validator
 {
     const ERROR_PREFIX = 'OpenSSL: ';
     const WARNING_PREFIX = 'OpenSSL: ';
@@ -44,7 +44,7 @@ class OpenSsl_Certificate_Chain_Validator
 
     protected $_trustedRootCertificateAuthorityFile;
 
-    public function __construct(OpenSsl_Certificate_Chain $chain)
+    public function __construct(JanusSsp_OpenSsl_Certificate_Chain $chain)
     {
         $this->_chain = $chain;
     }

@@ -25,7 +25,7 @@
 /**
  * Demo implementation of shell command pattern.
  */
-class Shell_Command_Echo extends Shell_Command_Abstract
+class JanusSsp_Shell_Command_Echo extends JanusSsp_Shell_Command_Abstract
 {
     const COMMAND = 'echo';
 
