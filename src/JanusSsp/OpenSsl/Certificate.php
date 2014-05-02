@@ -33,7 +33,8 @@ class JanusSsp_OpenSsl_Certificate
     public function __construct($pemData)
     {
         $this->_pemData = $pemData;
-        $this->_parsed = openssl_x509_parse($pemData);
+        /** @todo added shutup operator to prevent warning from being thrown, see also: https://bugs.php.net/bug.php?id=66636 _parsed */
+        $this->_parsed = @openssl_x509_parse($pemData);
 
         if ($this->_parsed === false) {
             throw new JanusSsp_OpenSsl_Certificate_Exception_NotAValidPem("Data '$pemData' is not a valid X.509 PEM certificate");
