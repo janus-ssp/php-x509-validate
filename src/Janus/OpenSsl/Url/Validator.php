@@ -25,7 +25,7 @@
 /**
  *
  */
-class JanusSsp_OpenSsl_Url_Validator
+class Janus_OpenSsl_Url_Validator
 {
     protected $_url;
 
@@ -37,7 +37,7 @@ class JanusSsp_OpenSsl_Url_Validator
     public function validate()
     {
         try {
-            $sslUrl = new JanusSsp_OpenSsl_Url($this->_url);
+            $sslUrl = new Janus_OpenSsl_Url($this->_url);
         } catch (Exception $e) {
             $endpointResponse->Errors[] = "Endpoint is not a valid URL";
 
@@ -91,7 +91,7 @@ class JanusSsp_OpenSsl_Url_Validator
             );
         }
 
-        $urlChainValidator = new JanusSsp_OpenSsl_Certificate_Chain_Validator($urlChain);
+        $urlChainValidator = new Janus_OpenSsl_Certificate_Chain_Validator($urlChain);
         $urlChainValidator->validate();
     }
 }

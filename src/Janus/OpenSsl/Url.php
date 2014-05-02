@@ -25,7 +25,7 @@
 /**
  *
  */
-class JanusSsp_OpenSsl_Url
+class Janus_OpenSsl_Url
 {
     protected $_url;
     protected $_parsed;
@@ -35,7 +35,7 @@ class JanusSsp_OpenSsl_Url
     protected $_serverCertificateChainPem;
 
     /**
-     * @var JanusSsp_OpenSsl_Command_SClient
+     * @var Janus_OpenSsl_Command_SClient
      */
     protected $_connection;
 
@@ -44,7 +44,7 @@ class JanusSsp_OpenSsl_Url
         $this->_url     = $url;
         $this->_parsed  = parse_url($url);
         if (!$this->_parsed) {
-            throw new JanusSsp_OpenSsl_Url_UnparsableUrlException("Url '$url' is not a valid URL");
+            throw new Janus_OpenSsl_Url_UnparsableUrlException("Url '$url' is not a valid URL");
         }
     }
 
@@ -72,7 +72,7 @@ class JanusSsp_OpenSsl_Url
 
     public function connect()
     {
-        $command = new JanusSsp_OpenSsl_Command_SClient();
+        $command = new Janus_OpenSsl_Command_SClient();
         $command->setConnectTo($this->_parsed['host']);
         $command->setShowCerts(true);
         if (isset($this->_trustedRootCertificateAuthorityFile)) {
@@ -90,11 +90,11 @@ class JanusSsp_OpenSsl_Url
             $this->connect();
         }
 
-        $x509Command = new JanusSsp_OpenSsl_Command_X509();
+        $x509Command = new Janus_OpenSsl_Command_X509();
         $x509Command->execute($this->_connection->getOutput());
         $pem = $x509Command->getOutput();
 
-        return new JanusSsp_OpenSsl_Certificate($pem);
+        return new Janus_OpenSsl_Certificate($pem);
     }
 
     public function getServerCertificateChain()
@@ -102,9 +102,9 @@ class JanusSsp_OpenSsl_Url
         $blocks = explode("\n---\n", $this->_connection->getOutput());
         $certificateOutput = $blocks[1];
 
-        $certificatesFound = JanusSsp_OpenSsl_Certificate_Utility::getCertificatesFromText($certificateOutput);
+        $certificatesFound = Janus_OpenSsl_Certificate_Utility::getCertificatesFromText($certificateOutput);
 
-        return JanusSsp_OpenSsl_Certificate_Chain_Factory::createFromCertificates($certificatesFound);
+        return Janus_OpenSsl_Certificate_Chain_Factory::createFromCertificates($certificatesFound);
     }
 
     public function isCertificateValidForUrlHostname()

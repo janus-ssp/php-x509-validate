@@ -22,31 +22,53 @@
  * @license   http://www.apache.org/licenses/LICENSE-2.0  Apache License 2.0
  */
 
+define('DAY_IN_SECONDS', 86400);
+
 /**
  *
  */
-class JanusSsp_OpenSsl_Certificate_Chain_Validator
+class Janus_OpenSsl_Certificate_Validator
 {
-    const ERROR_PREFIX = 'OpenSSL: ';
-    const WARNING_PREFIX = 'OpenSSL: ';
+    const ERROR_PREFIX      = 'OpenSSL: ';
+    const WARNING_PREFIX    = 'OpenSSL: ';
 
-    protected $_chain;
+    /**
+     * @var Certificate
+     */
+    protected $_certificate;
 
-    protected $_ignoreOnSelfSigned = false;
-
-    protected $_warnOnSelfSigned = false;
-
-    protected $_valid;
-
+    /**
+     * @var array
+     */
     protected $_warnings = array();
 
+    /**
+     * @var array
+     */
     protected $_errors = array();
+
+    protected $_certificateExpiryWarningDays = 30;
+
+    /**
+     * @var bool
+     */
+    protected $_ignoreOnSelfSigned = false;
+
+    /**
+     * @var bool
+     */
+    protected $_warnOnSelfSigned = false;
+
+    /**
+     * @var bool
+     */
+    protected $_isValid;
 
     protected $_trustedRootCertificateAuthorityFile;
 
-    public function __construct(JanusSsp_OpenSsl_Certificate_Chain $chain)
+    public function __construct(Janus_OpenSsl_Certificate $certificate)
     {
-        $this->_chain = $chain;
+        $this->_certificate = $certificate;
     }
 
     public function setIgnoreSelfSigned($mustIgnore)
@@ -70,43 +92,39 @@ class JanusSsp_OpenSsl_Certificate_Chain_Validator
         return $this;
     }
 
-    public function validate()
+    public function setCertificateExpiryWarningDays($days)
     {
-        $this->_validateSequence();
-        $this->_validateWithOpenSsl();
+        $this->_certificateExpiryWarningDays = $days;
+
+        return $this;
     }
 
-    protected function _validateSequence()
+    public function validate()
     {
-        $chainCertificates = $this->_chain->getCertificates();
+        $this->_validateExpiry();
+        $this->_validateWithOpenSsl();
 
-        $certificate = array_shift($chainCertificates);
-        $count = 1;
+        return $this->_isValid;
+    }
 
-        $prevIssuer = $certificate->getIssuerDn();
+    protected function _validateExpiry()
+    {
+        if ($this->_certificate->getValidFromUnixTime() > time()) {
+            $this->_errors[] = "Entity certificate is not yet valid";
+        }
+        if ($this->_certificate->getValidUntilUnixTime() < time()) {
+            $this->_errors[] = "Entity certificate has expired";
+        }
 
-        while (!empty($chainCertificates)) {
-            $certificate = array_shift($chainCertificates);
-            $count++;
-
-            $subjectDn = $certificate->getSubjectDn();
-            if ($prevIssuer !== $subjectDn) {
-                $this->_valid = false;
-                $this->_errors[] = "Problem in chain, certificate $count ($subjectDn) does not match the expected issuer ($prevIssuer)";
-            }
-            $prevIssuer = $certificate->getIssuerDn();
+        // Check if the certificate is still valid in x days, add a warning if it is not
+        $entityMetadataMinimumValidityUnixTime = time() + ($this->_certificateExpiryWarningDays * DAY_IN_SECONDS);
+        if (!$this->_certificate->getValidUntilUnixTime() > $entityMetadataMinimumValidityUnixTime) {
+            $this->_warnings[] = "Entity certificate will expire in less than {$this->_certificateExpiryWarningDays} days";
         }
     }
 
     protected function _validateWithOpenSsl()
     {
-        $chainPems = '';
-        $chainCertificates = $this->_chain->getCertificates();
-
-        foreach ($chainCertificates as $certificate) {
-            $chainPems = $certificate->getPem() . PHP_EOL . $chainPems;
-        }
-
         $command = new OpenSSL_Command_Verify();
         if (isset($this->_trustedRootCertificateAuthorityFile)) {
             $command->setCertificateAuthorityFile($this->_trustedRootCertificateAuthorityFile);
@@ -114,11 +132,11 @@ class JanusSsp_OpenSsl_Certificate_Chain_Validator
 
         // Open ssl command does not return it's error output when called indirectly
         $command->enableErrorToOutputRedirection();
-        $command->execute($chainPems)->getOutput();
-
+        $command->execute($this->_certificate->getPem());
         $results = $command->getParsedResults();
 
-        $this->_valid = $results['valid'];
+        $this->_isValid = $results['valid'];
+
         foreach ($results['errors'] as $openSslErrorCode => $openSslError) {
             if ($openSslErrorCode === OPENSSL_X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT) {
                 if ($this->_ignoreOnSelfSigned) {
@@ -135,7 +153,11 @@ class JanusSsp_OpenSsl_Certificate_Chain_Validator
 
     public function isValid()
     {
-        return $this->_valid;
+        if (!isset($this->_isValid)) {
+            $this->validate();
+        }
+
+        return $this->_isValid;
     }
 
     public function getWarnings()

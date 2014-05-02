@@ -22,18 +22,6 @@
  * @license   http://www.apache.org/licenses/LICENSE-2.0  Apache License 2.0
  */
 
-/**
- * Interface for a shell command.
- */
-interface JanusSsp_Shell_Command_Interface
+class Janus_OpenSsl_Certificate_Exception_NotAValidPem extends Exception
 {
-    /**
-     * @abstract
-     * @param  string                  $stdIn
-     * @return JanusSsp_Shell_Command_Interface
-     */
-    public function execute($stdIn = "");
-    public function getExitStatus();
-    public function getOutput();
-    public function getErrors();
 }
