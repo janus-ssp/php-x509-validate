@@ -14,8 +14,8 @@
     ],
     "autoload": {
         "psr-0": {
-            "JanusSsp_OpenSsl_": "src/",
-            "JanusSsp_Shell_": "src/"
+            "Janus_OpenSsl_": "src/",
+            "Janus_Shell_": "src/"
         }
     }
 }

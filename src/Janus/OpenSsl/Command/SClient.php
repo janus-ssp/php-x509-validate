@@ -29,7 +29,7 @@
  * "The s_client command implements a generic SSL/TLS client which connects to a remote host using SSL/TLS.
  * It is a very useful diagnostic tool for SSL servers."
  */
-class JanusSsp_OpenSsl_Command_SClient extends JanusSsp_Shell_Command_Abstract
+class Janus_OpenSsl_Command_SClient extends Janus_Shell_Command_Abstract
 {
     const COMMAND = 'openssl s_client';
 

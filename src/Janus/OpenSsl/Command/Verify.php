@@ -215,7 +215,7 @@ define("OPENSSL_X509_V_ERR_APPLICATION_VERIFICATION", 50);
  *
  * Tries to parse the (unspecified) output.
  */
-class JanusSsp_OpenSsl_Command_Verify extends JanusSsp_Shell_Command_Abstract
+class Janus_OpenSsl_Command_Verify extends Janus_Shell_Command_Abstract
 {
     const COMMAND = 'openssl verify';
 

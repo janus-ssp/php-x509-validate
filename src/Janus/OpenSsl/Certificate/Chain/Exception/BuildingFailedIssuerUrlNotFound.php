@@ -22,10 +22,6 @@
  * @license   http://www.apache.org/licenses/LICENSE-2.0  Apache License 2.0
  */
 
-/**
- *
- */
-class JanusSsp_OpenSsl_Url_UnparsableUrlException extends Exception
+class Janus_OpenSsl_Certificate_Chain_Exception_BuildingFailedIssuerUrlNotFound extends Exception
 {
-
 }
