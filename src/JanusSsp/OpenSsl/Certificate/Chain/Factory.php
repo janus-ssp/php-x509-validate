@@ -1,10 +1,10 @@
 <?php
 /**
- * SURFconext Service Registry
+ * Janus X509 Certificate Validator
  *
  * LICENSE
  *
- * Copyright 2011 SURFnet bv, The Netherlands
+ * Copyright 2013 Janus SSP group
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,15 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and limitations under the License.
  *
- * @category  SURFconext Service Registry
  * @package
- * @copyright Copyright © 2010-2011 SURFnet SURFnet bv, The Netherlands (http://www.surfnet.nl)
+ * @copyright 2010-2013 Janus SSP group
  * @license   http://www.apache.org/licenses/LICENSE-2.0  Apache License 2.0
  */
 
 /**
- *
- */ 
-class OpenSsl_Certificate_Chain_Factory 
+ * Build a certificate chain
+ */
+class JanusSsp_OpenSsl_Certificate_Chain_Factory
 {
     protected static $s_rootCertificates;
 
@@ -37,7 +36,7 @@ class OpenSsl_Certificate_Chain_Factory
         }
 
         $fileContents = file_get_contents($filePath);
-        $certificatesFound = OpenSsl_Certificate_Utility::getCertificatesFromText($fileContents);
+        $certificatesFound = JanusSsp_OpenSsl_Certificate_Utility::getCertificatesFromText($fileContents);
 
         self::setRootCertificates($certificatesFound);
     }
@@ -49,7 +48,7 @@ class OpenSsl_Certificate_Chain_Factory
 
     public static function createFromCertificates(array $certificates)
     {
-        $chain = new OpenSsl_Certificate_Chain();
+        $chain = new JanusSsp_OpenSsl_Certificate_Chain();
         foreach ($certificates as $certificate) {
             // Root CA?
             if (isset(self::$s_rootCertificates[$certificate->getIssuerDn()])) {
@@ -58,14 +57,15 @@ class OpenSsl_Certificate_Chain_Factory
 
             $chain->addCertificate($certificate);
         }
+
         return $chain;
     }
 
     public static function createFromPems(array $pems)
     {
-        $chain = new OpenSsl_Certificate_Chain();
+        $chain = new JanusSsp_OpenSsl_Certificate_Chain();
         foreach ($pems as $pem) {
-            $certificate = new OpenSsl_Certificate($pem);
+            $certificate = new JanusSsp_OpenSsl_Certificate($pem);
 
             // Root CA?
             if (isset(self::$s_rootCertificates[$certificate->getIssuerDn()])) {
@@ -74,15 +74,16 @@ class OpenSsl_Certificate_Chain_Factory
 
             $chain->addCertificate($certificate);
         }
+
         return $chain;
     }
 
-    public static function createFromCertificateIssuerUrl(OpenSsl_Certificate $certificate, OpenSsl_Certificate_Chain $chain = null)
+    public static function createFromCertificateIssuerUrl(JanusSsp_OpenSsl_Certificate $certificate, JanusSsp_OpenSsl_Certificate_Chain $chain = null)
     {
         if (!$chain) {
-            $chain = new OpenSsl_Certificate_Chain();
+            $chain = new JanusSsp_OpenSsl_Certificate_Chain();
         }
-        
+
         $chain->addCertificate($certificate);
 
         // Self signed?
@@ -93,6 +94,7 @@ class OpenSsl_Certificate_Chain_Factory
         // Root CA, add it and stop building
         if (isset(self::$s_rootCertificates[$certificate->getIssuerDn()])) {
             $chain->addCertificate(self::$s_rootCertificates[$certificate->getIssuerDn()]);
+
             return $chain;
         }
 
@@ -101,7 +103,8 @@ class OpenSsl_Certificate_Chain_Factory
          */
         $issuerUrls = $certificate->getCertificateAuthorityIssuerUrls();
         if (empty($issuerUrls)) {
-            throw new OpenSsl_Certificate_Chain_Exception_BuildingFailedIssuerUrlNotFound("Unable to get issuer certificate?");
+            // Can't get the issuer certificate... return the chain as is...
+            return $chain;
         }
 
         foreach ($issuerUrls as $issuerUrl) {
@@ -114,18 +117,17 @@ class OpenSsl_Certificate_Chain_Factory
 
             // Not a PEM certificate? Probably a DER certificate, transform
             if (strpos($issuerCertificate, '-----BEGIN CERTIFICATE-----') === false) {
-                $x509Command = new OpenSsl_Command_X509();
-                $x509Command->setInForm(OpenSsl_Command_X509::FORM_DER);
+                $x509Command = new JanusSsp_OpenSsl_Command_X509();
+                $x509Command->setInForm(JanusSsp_OpenSsl_Command_X509::FORM_DER);
                 $x509Command->execute($issuerCertificate)->getOutput();
                 $issuerCertificate = $x509Command->getOutput();
             }
 
-            $issuerCertificate = new OpenSsl_Certificate($issuerCertificate);
+            $issuerCertificate = new JanusSsp_OpenSsl_Certificate($issuerCertificate);
+
             return self::createFromCertificateIssuerUrl($issuerCertificate, $chain);
         }
-
-        throw new OpenSsl_Certificate_Chain_Exception_BuildingFailedIssuerUrlNotFound(
-            "Unable to get issuer certificate?"
-        );
+        // Can't get the issuer certificate... return the chain as is...
+        return $chain;
     }
 }

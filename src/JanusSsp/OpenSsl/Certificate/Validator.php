@@ -1,10 +1,10 @@
 <?php
 /**
- * SURFconext Service Registry
+ * Janus X509 Certificate Validator
  *
  * LICENSE
  *
- * Copyright 2011 SURFnet bv, The Netherlands
+ * Copyright 2013 Janus SSP group
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and limitations under the License.
  *
- * @category  SURFconext Service Registry
  * @package
- * @copyright Copyright © 2010-2011 SURFnet SURFnet bv, The Netherlands (http://www.surfnet.nl)
+ * @copyright 2010-2013 Janus SSP group
  * @license   http://www.apache.org/licenses/LICENSE-2.0  Apache License 2.0
  */
 
@@ -28,13 +27,13 @@ define('DAY_IN_SECONDS', 86400);
 /**
  *
  */
-class OpenSsl_Certificate_Validator
+class JanusSsp_OpenSsl_Certificate_Validator
 {
     const ERROR_PREFIX      = 'OpenSSL: ';
     const WARNING_PREFIX    = 'OpenSSL: ';
 
     /**
-     * @var sspmod_serviceregistry_Certificate
+     * @var Certificate
      */
     protected $_certificate;
 
@@ -67,7 +66,7 @@ class OpenSsl_Certificate_Validator
 
     protected $_trustedRootCertificateAuthorityFile;
 
-    public function __construct(OpenSsl_Certificate $certificate)
+    public function __construct(JanusSsp_OpenSsl_Certificate $certificate)
     {
         $this->_certificate = $certificate;
     }
@@ -75,24 +74,28 @@ class OpenSsl_Certificate_Validator
     public function setIgnoreSelfSigned($mustIgnore)
     {
         $this->_ignoreOnSelfSigned = $mustIgnore;
+
         return $this;
     }
 
     public function setWarnOnSelfSigned($mustWarn)
     {
         $this->_warnOnSelfSigned = $mustWarn;
+
         return $this;
     }
 
     public function setTrustedRootCertificateAuthorityFile($file)
     {
         $this->_trustedRootCertificateAuthorityFile = $file;
+
         return $this;
     }
 
     public function setCertificateExpiryWarningDays($days)
     {
         $this->_certificateExpiryWarningDays = $days;
+
         return $this;
     }
 
@@ -103,7 +106,7 @@ class OpenSsl_Certificate_Validator
 
         return $this->_isValid;
     }
-    
+
     protected function _validateExpiry()
     {
         if ($this->_certificate->getValidFromUnixTime() > time()) {
@@ -126,17 +129,19 @@ class OpenSsl_Certificate_Validator
         if (isset($this->_trustedRootCertificateAuthorityFile)) {
             $command->setCertificateAuthorityFile($this->_trustedRootCertificateAuthorityFile);
         }
+
+        // Open ssl command does not return it's error output when called indirectly
+        $command->enableErrorToOutputRedirection();
         $command->execute($this->_certificate->getPem());
         $results = $command->getParsedResults();
-        
+
         $this->_isValid = $results['valid'];
 
         foreach ($results['errors'] as $openSslErrorCode => $openSslError) {
             if ($openSslErrorCode === OPENSSL_X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT) {
                 if ($this->_ignoreOnSelfSigned) {
                     continue;
-                }
-                else if ($this->_warnOnSelfSigned) {
+                } elseif ($this->_warnOnSelfSigned) {
                     $this->_warnings[] = self::WARNING_PREFIX . $openSslError['description'];
                     continue;
                 }

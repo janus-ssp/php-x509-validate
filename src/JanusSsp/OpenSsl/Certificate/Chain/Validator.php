@@ -1,10 +1,10 @@
 <?php
 /**
- * SURFconext Service Registry
+ * Janus X509 Certificate Validator
  *
  * LICENSE
  *
- * Copyright 2011 SURFnet bv, The Netherlands
+ * Copyright 2013 Janus SSP group
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,20 +17,19 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and limitations under the License.
  *
- * @category  SURFconext Service Registry
  * @package
- * @copyright Copyright © 2010-2011 SURFnet SURFnet bv, The Netherlands (http://www.surfnet.nl)
+ * @copyright 2010-2013 Janus SSP group
  * @license   http://www.apache.org/licenses/LICENSE-2.0  Apache License 2.0
  */
 
 /**
  *
- */ 
-class OpenSsl_Certificate_Chain_Validator
+ */
+class JanusSsp_OpenSsl_Certificate_Chain_Validator
 {
     const ERROR_PREFIX = 'OpenSSL: ';
     const WARNING_PREFIX = 'OpenSSL: ';
-    
+
     protected $_chain;
 
     protected $_ignoreOnSelfSigned = false;
@@ -45,7 +44,7 @@ class OpenSsl_Certificate_Chain_Validator
 
     protected $_trustedRootCertificateAuthorityFile;
 
-    public function __construct(OpenSsl_Certificate_Chain $chain)
+    public function __construct(JanusSsp_OpenSsl_Certificate_Chain $chain)
     {
         $this->_chain = $chain;
     }
@@ -53,18 +52,21 @@ class OpenSsl_Certificate_Chain_Validator
     public function setIgnoreSelfSigned($mustIgnore)
     {
         $this->_ignoreOnSelfSigned = $mustIgnore;
+
         return $this;
     }
 
     public function setWarnOnSelfSigned($mustWarn)
     {
         $this->_warnOnSelfSigned = $mustWarn;
+
         return $this;
     }
 
     public function setTrustedRootCertificateAuthorityFile($file)
     {
         $this->_trustedRootCertificateAuthorityFile = $file;
+
         return $this;
     }
 
@@ -83,7 +85,7 @@ class OpenSsl_Certificate_Chain_Validator
 
         $prevIssuer = $certificate->getIssuerDn();
 
-        while(!empty($chainCertificates)) {
+        while (!empty($chainCertificates)) {
             $certificate = array_shift($chainCertificates);
             $count++;
 
@@ -109,17 +111,19 @@ class OpenSsl_Certificate_Chain_Validator
         if (isset($this->_trustedRootCertificateAuthorityFile)) {
             $command->setCertificateAuthorityFile($this->_trustedRootCertificateAuthorityFile);
         }
+
+        // Open ssl command does not return it's error output when called indirectly
+        $command->enableErrorToOutputRedirection();
         $command->execute($chainPems)->getOutput();
 
         $results = $command->getParsedResults();
-        
+
         $this->_valid = $results['valid'];
         foreach ($results['errors'] as $openSslErrorCode => $openSslError) {
             if ($openSslErrorCode === OPENSSL_X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT) {
                 if ($this->_ignoreOnSelfSigned) {
                     continue;
-                }
-                else if ($this->_warnOnSelfSigned) {
+                } elseif ($this->_warnOnSelfSigned) {
                     $this->_warnings[] = self::WARNING_PREFIX . $openSslError['description'];
                     continue;
                 }

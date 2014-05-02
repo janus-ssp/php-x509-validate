@@ -1,10 +1,10 @@
 <?php
 /**
- * SURFconext Service Registry
+ * Janus X509 Certificate Validator
  *
  * LICENSE
  *
- * Copyright 2011 SURFnet bv, The Netherlands
+ * Copyright 2013 Janus SSP group
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and limitations under the License.
  *
- * @category  SURFconext Service Registry
  * @package
- * @copyright Copyright © 2010-2011 SURFnet SURFnet bv, The Netherlands (http://www.surfnet.nl)
+ * @copyright 2010-2013 Janus SSP group
  * @license   http://www.apache.org/licenses/LICENSE-2.0  Apache License 2.0
  */
 
@@ -209,11 +208,18 @@ define("OPENSSL_X509_V_ERR_KEYUSAGE_NO_CERTSIGN", 32);
 define("OPENSSL_X509_V_ERR_APPLICATION_VERIFICATION", 50);
 
 /**
- * 
+ * OpenSSL verify
+ *
+ * From the documentation (http://www.openssl.org/docs/apps/verify.html):
+ * "The verify command verifies certificate chains."
+ *
+ * Tries to parse the (unspecified) output.
  */
-class OpenSsl_Command_Verify extends Shell_Command_Abstract
+class JanusSsp_OpenSsl_Command_Verify extends JanusSsp_Shell_Command_Abstract
 {
     const COMMAND = 'openssl verify';
+
+    protected $_caFile;
 
     /**
      * From:
@@ -357,25 +363,42 @@ class OpenSsl_Command_Verify extends Shell_Command_Abstract
         ),
     );
 
-    protected $_certificateAuthorityFile;
-
-    public function setCertificateAuthorityFile($file)
+    public function setCertificateAuthorityFile($caFile)
     {
-        $this->_certificateAuthorityFile = $file;
+        $this->_caFile = $caFile;
+
         return $this;
     }
 
-    protected function _buildCommand()
+    protected function _buildCommand($arguments = array())
     {
-        return self::COMMAND;
+        $command = self::COMMAND;
+        if (isset($this->_caFile)) {
+            return $command . ' -CAfile ' . escapeshellarg(realpath($this->_caFile));
+        } else {
+            return $command;
+        }
     }
 
+    /**
+     * Tries to parse the results and return whether the validation succeeded or not and any errors that occurred.
+     *
+     * @throws Exception
+     * @return array     Parsed results in the form: array(valid => bool, errors => array(code => message))
+     */
     public function getParsedResults()
     {
-        $output = $this->_output;
-        if (strpos($this->_output, 'stdin: ')===0) {
-            $output = trim(substr($this->_output, strlen('stdin: ')));
+        if (empty($this->_output)) {
+            throw new Exception("Verify did not return any output");
         }
+
+        $stdInPrefix = 'stdin: ';
+        $wasExecutionSuccesful = strpos($this->_output, $stdInPrefix)===0;
+        if (!$wasExecutionSuccesful) {
+            return $this->_buildExecutionErrors($this->_output);
+        }
+
+        $output = trim(substr($this->_output, strlen($stdInPrefix)));
         $outputLines = explode(PHP_EOL, $output);
 
         $valid = false;
@@ -395,16 +418,40 @@ class OpenSsl_Command_Verify extends Shell_Command_Abstract
                 throw new Exception("Expecting 'error NUM at NUM depth', got: '$errorLine'");
             }
 
-            $errorCode = (int)$matches[1];
+            $errorCode = (int) $matches[1];
             if (!isset($this->_ERROR_CODE_LOOKUP[$errorCode])) {
                 throw new Exception("Unknown error code '$errorCode' from '$errorLine'?!");
             }
 
             $errors[$errorCode] = $this->_ERROR_CODE_LOOKUP[$errorCode];
         }
+
         return array(
             'valid' => $valid,
             'errors' => $errors,
+        );
+    }
+
+    /**
+     * Builds return value when validation execution fails
+     *
+     * @param  string $output
+     * @return array  error result
+     */
+    protected function _buildExecutionErrors($output)
+    {
+        $errors = array();
+        $errorLines = explode(PHP_EOL, trim($output));
+        foreach ($errorLines as $errorLine) {
+            $errors[] = array(
+                'name' => 'ERROR',
+                'description' => $errorLine
+            );
+        }
+
+        return array(
+            'valid' => false,
+            'errors' => $errors
         );
     }
 }

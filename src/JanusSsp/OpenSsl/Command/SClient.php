@@ -1,10 +1,10 @@
 <?php
 /**
- * SURFconext Service Registry
+ * Janus X509 Certificate Validator
  *
  * LICENSE
  *
- * Copyright 2011 SURFnet bv, The Netherlands
+ * Copyright 2013 Janus SSP group
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,19 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and limitations under the License.
  *
- * @category  SURFconext Service Registry
  * @package
- * @copyright Copyright © 2010-2011 SURFnet SURFnet bv, The Netherlands (http://www.surfnet.nl)
+ * @copyright 2010-2013 Janus SSP group
  * @license   http://www.apache.org/licenses/LICENSE-2.0  Apache License 2.0
  */
 
 /**
+ * OpenSSL s_client command
  *
- */ 
-class OpenSsl_Command_SClient extends Shell_Command_Abstract
+ * From the OpenSSL documentation (http://www.openssl.org/docs/apps/s_client.html):
+ * "The s_client command implements a generic SSL/TLS client which connects to a remote host using SSL/TLS.
+ * It is a very useful diagnostic tool for SSL servers."
+ */
+class JanusSsp_OpenSsl_Command_SClient extends JanusSsp_Shell_Command_Abstract
 {
     const COMMAND = 'openssl s_client';
 
@@ -40,6 +43,7 @@ class OpenSsl_Command_SClient extends Shell_Command_Abstract
             'host' => $host,
             'port' => $port,
         );
+
         return $this;
     }
 
@@ -51,10 +55,11 @@ class OpenSsl_Command_SClient extends Shell_Command_Abstract
     public function setCertificateAuthorityFile($file)
     {
         $this->_certificateAuthorityFile = $file;
+
         return $this;
     }
 
-    public function _buildCommand()
+    public function _buildCommand($arguments = array())
     {
         $command = self::COMMAND;
         if (isset($this->_connectTo)) {
@@ -66,6 +71,7 @@ class OpenSsl_Command_SClient extends Shell_Command_Abstract
         if (isset($this->_certificateAuthorityFile)) {
             $command .= ' -CAfile ' . escapeshellarg($this->_certificateAuthorityFile);
         }
+
         return $command;
     }
 }

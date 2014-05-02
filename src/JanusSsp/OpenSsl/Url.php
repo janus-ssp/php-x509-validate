@@ -1,10 +1,10 @@
 <?php
 /**
- * SURFconext Service Registry
+ * Janus X509 Certificate Validator
  *
  * LICENSE
  *
- * Copyright 2011 SURFnet bv, The Netherlands
+ * Copyright 2013 Janus SSP group
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,15 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and limitations under the License.
  *
- * @category  SURFconext Service Registry
  * @package
- * @copyright Copyright © 2010-2011 SURFnet SURFnet bv, The Netherlands (http://www.surfnet.nl)
+ * @copyright 2010-2013 Janus SSP group
  * @license   http://www.apache.org/licenses/LICENSE-2.0  Apache License 2.0
  */
 
 /**
  *
- */ 
-class OpenSsl_Url
+ */
+class JanusSsp_OpenSsl_Url
 {
     protected $_url;
     protected $_parsed;
@@ -36,7 +35,7 @@ class OpenSsl_Url
     protected $_serverCertificateChainPem;
 
     /**
-     * @var OpenSsl_Command_SClient
+     * @var JanusSsp_OpenSsl_Command_SClient
      */
     protected $_connection;
 
@@ -45,13 +44,14 @@ class OpenSsl_Url
         $this->_url     = $url;
         $this->_parsed  = parse_url($url);
         if (!$this->_parsed) {
-            throw new OpenSsl_Url_UnparsableUrlException("Url '$url' is not a valid URL");
+            throw new JanusSsp_OpenSsl_Url_UnparsableUrlException("Url '$url' is not a valid URL");
         }
     }
 
     public function setTrustedRootCertificateAuthorityFile($file)
     {
         $this->_trustedRootCertificateAuthorityFile = $file;
+
         return $this;
     }
 
@@ -67,12 +67,12 @@ class OpenSsl_Url
 
     public function isHttps()
     {
-        return ($this->_parsed && strtolower($this->_parsed['scheme'])==='https');
+        return ($this->_parsed && isset($this->_parsed['scheme']) && strtolower($this->_parsed['scheme']) === 'https');
     }
 
     public function connect()
     {
-        $command = new OpenSsl_Command_SClient();
+        $command = new JanusSsp_OpenSsl_Command_SClient();
         $command->setConnectTo($this->_parsed['host']);
         $command->setShowCerts(true);
         if (isset($this->_trustedRootCertificateAuthorityFile)) {
@@ -90,11 +90,11 @@ class OpenSsl_Url
             $this->connect();
         }
 
-        $x509Command = new OpenSsl_Command_X509();
+        $x509Command = new JanusSsp_OpenSsl_Command_X509();
         $x509Command->execute($this->_connection->getOutput());
         $pem = $x509Command->getOutput();
 
-        return new OpenSsl_Certificate($pem);
+        return new JanusSsp_OpenSsl_Certificate($pem);
     }
 
     public function getServerCertificateChain()
@@ -102,8 +102,9 @@ class OpenSsl_Url
         $blocks = explode("\n---\n", $this->_connection->getOutput());
         $certificateOutput = $blocks[1];
 
-        $certificatesFound = OpenSsl_Certificate_Utility::getCertificatesFromText($certificateOutput);
-        return OpenSsl_Certificate_Chain_Factory::createFromCertificates($certificatesFound);
+        $certificatesFound = JanusSsp_OpenSsl_Certificate_Utility::getCertificatesFromText($certificateOutput);
+
+        return JanusSsp_OpenSsl_Certificate_Chain_Factory::createFromCertificates($certificatesFound);
     }
 
     public function isCertificateValidForUrlHostname()
@@ -118,6 +119,7 @@ class OpenSsl_Url
                 return true;
             }
         }
+
         return false;
     }
 
@@ -127,8 +129,8 @@ class OpenSsl_Url
      * or
      * *.test.example.com
      *
-     * @param string $hostname
-     * @param string $pattern
+     * @param  string $hostname
+     * @param  string $pattern
      * @return bool
      */
     protected function _doesHostnameMatchPattern($hostname, $pattern)

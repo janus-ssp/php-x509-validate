@@ -1,10 +1,10 @@
 <?php
 /**
- * SURFconext Service Registry
+ * Janus X509 Certificate Validator
  *
  * LICENSE
  *
- * Copyright 2011 SURFnet bv, The Netherlands
+ * Copyright 2013 Janus SSP group
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,20 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and limitations under the License.
  *
- * @category  SURFconext Service Registry
  * @package
- * @copyright Copyright © 2010-2011 SURFnet SURFnet bv, The Netherlands (http://www.surfnet.nl)
+ * @copyright 2010-2013 Janus SSP group
  * @license   http://www.apache.org/licenses/LICENSE-2.0  Apache License 2.0
  */
 
 /**
- *
- */ 
-class OpenSsl_Certificate_Exception_NotAValidPem extends Exception
+ * Demo implementation of shell command pattern.
+ */
+class JanusSsp_Shell_Command_Echo extends JanusSsp_Shell_Command_Abstract
 {
+    const COMMAND = 'echo';
+
+    public function _buildCommand($arguments = array())
+    {
+        return self::COMMAND . ' ' . escapeshellarg($arguments[0]);
+    }
 }
