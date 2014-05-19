@@ -125,7 +125,7 @@ class Janus_OpenSsl_Certificate_Validator
 
     protected function _validateWithOpenSsl()
     {
-        $command = new OpenSSL_Command_Verify();
+        $command = new Janus_OpenSsl_Command_Verify();
         if (isset($this->_trustedRootCertificateAuthorityFile)) {
             $command->setCertificateAuthorityFile($this->_trustedRootCertificateAuthorityFile);
         }
