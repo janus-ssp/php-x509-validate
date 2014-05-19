@@ -85,6 +85,9 @@ class Janus_OpenSsl_Certificate
     {
         $dnParts = array();
         foreach ($this->_parsed['subject'] as $key => $value) {
+            if (is_array($value)) {
+                $value = implode("\n", $value);
+            }
             $dnParts []= "/$key=$value";
         }
 
