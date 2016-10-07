@@ -63,7 +63,7 @@ class Janus_OpenSsl_Command_SClient extends Janus_Shell_Command_Abstract
     {
         $command = self::COMMAND;
         if (isset($this->_connectTo)) {
-            $command .= " -connect {$this->_connectTo['host']}:{$this->_connectTo['port']}";
+            $command .= " -connect {$this->_connectTo['host']}:{$this->_connectTo['port']} -servername {$this->_connectTo['host']}";
         }
         if (isset($this->_showCerts) && $this->_showCerts) {
             $command .= ' -showcerts';
