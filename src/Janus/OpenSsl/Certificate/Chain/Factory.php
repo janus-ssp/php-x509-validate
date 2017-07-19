@@ -108,7 +108,12 @@ class Janus_OpenSsl_Certificate_Chain_Factory
         }
 
         foreach ($issuerUrls as $issuerUrl) {
-            $issuerCertificate = file_get_contents($issuerUrl);
+            try {
+                $issuerCertificate = \SimpleSAML\Utils\HTTP::fetch($issuerUrl);
+            } catch (\SimpleSAML_Error_Exception $e) {
+                $issuerCertificate = null;
+            }
+
             if (!$issuerCertificate || trim($issuerCertificate) === "") {
                 // @todo Unable to get the issuer certificate... log this somewhere?
                 //       For now we silently just use the next issuer url
